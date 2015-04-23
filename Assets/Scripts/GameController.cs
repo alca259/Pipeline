@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using Assets.Scripts.Utils;
 using UnityEngine;
 using System.Collections.Generic;
 
@@ -31,6 +32,8 @@ public class GameController : MonoBehaviour {
 	private void Start() {
 		Random.seed = gameSeed;
 		FillPoints();
+	    inputPoints.Add(GetRandomPoint(true));
+	    outputPoints.Add(GetRandomPoint(false));
 	}
 
 	/// <summary>
@@ -42,41 +45,60 @@ public class GameController : MonoBehaviour {
 
 	#region Private Methods
 	private void FillPoints() {
-		casillas = new Casilla[gameBoardSquareHorizontally][];
+        int w = gameBoardSquareHorizontally; // width
+        int h = gameBoardSquareVertically; // height
 
-		for (int x = 0; x < this.gameBoardSquareHorizontally; x++) {
+        casillas = new Casilla[w][];
 
-			casillas[x] = new Casilla[this.gameBoardSquareVertically];
+        for (int x = 0; x < w; x++)
+        {
+            casillas[x] = new Casilla[h];
 
-			for (int y = 0; y < this.gameBoardSquareVertically; y++) {
-				if ((x == 0 && y == 0) || (x == 0 && y == (this.gameBoardSquareVertically - 1)) ||
-				    (x == (this.gameBoardSquareHorizontally - 1) && y == 0) || (x == (this.gameBoardSquareHorizontally - 1) && y == (this.gameBoardSquareVertically - 1))) {
+            for (int y = 0; y < h; y++)
+            {
+                if ((x == 0 && y == 0) || (x == 0 && y == (h - 1)) || (x == (w - 1) && y == 0) || (x == (w - 1) && y == (h - 1)))
+                {
+                    // Four corners
 					casillas[x][y] = new Casilla ();
-				} else if (x == 0 || x == (this.gameBoardSquareHorizontally - 1) ||
-				    y == 0 || y == (this.gameBoardSquareVertically - 1)) {
+                }
+                else if (x == 0 || x == (w - 1) || y == 0 || y == (h - 1))
+                {
+                    // Board margins
 					casillas[x][y] = new Casilla (EnumCasillaTipo.Punto);
-				} else {
+				}
+                else 
+                {
+                    // Board
 					casillas[x][y] = new Casilla (EnumCasillaTipo.Tablero);
 				}
 			}
 		}
 	}
 
-	/* TODO: Falta buscar */
-	/*
-	private Casilla GetRandomInputPoint() {
-		Casilla testPoint = null;
+	private Casilla GetRandomPoint(bool isInput) {
+		Casilla testPoint;
+	    List<Casilla> points = BoardHelper.GetPoints(casillas);
 
 		while(true) {
-			testPoint = casillas.ElementAt(Random.Range (0, casillas.Count() - 1));
-			if (!inputPoints.Contains(testPoint)) {
-				break;
-			}
+            testPoint = points.ElementAt(Random.Range(0, points.Count() - 1));
+		    if (isInput)
+		    {
+		        if (!inputPoints.Contains(testPoint))
+		        {
+		            break;
+		        }
+		    }
+		    else
+		    {
+                if (!outputPoints.Contains(testPoint))
+                {
+                    break;
+                }
+		    }
 		}
 
 		return testPoint;
 	}
-	*/
 
 	#endregion
 

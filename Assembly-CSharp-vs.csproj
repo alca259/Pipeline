@@ -51,7 +51,7 @@
     <Compile Include="Assets\Scripts\Models\Casilla.cs" />
     <Compile Include="Assets\Scripts\Models\EnumCasillaEstado.cs" />
     <Compile Include="Assets\Scripts\Models\EnumCasillaTipo.cs" />
-    <Compile Include="Assets\Scripts\Utils\MultiArrayHelper.cs" />
+    <Compile Include="Assets\Scripts\Utils\BoardHelper.cs" />
     <Reference Include="UnityEngine.UI">
       <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
     </Reference>
