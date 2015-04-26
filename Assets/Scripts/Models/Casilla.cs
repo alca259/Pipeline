@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 [Serializable]
@@ -8,9 +10,13 @@ public class Casilla
     private EnumCasillaTipo tipo;
     private EnumCasillaEstado estado;
     private GameObject tuberia;
+    private int posicionX;
+    private int posicionY;
     private int? rotacion;
     private Color? colorLiquido;
     private float? porcentajeLleno;
+
+	private List<int> validRotations = new List<int> {0, 90, 180, 270};
     #endregion
 
     #region Public constructors
@@ -19,6 +25,8 @@ public class Casilla
         Tipo = EnumCasillaTipo.Vacio;
         Estado = EnumCasillaEstado.Cerrado;
         Tuberia = null;
+        PosicionX = 0;
+        PosicionY = 0;
         Rotacion = null;
         ColorLiquido = null;
         PorcentajeLleno = null;
@@ -29,6 +37,8 @@ public class Casilla
 		Tipo = tipo;
 		Estado = EnumCasillaEstado.Cerrado;
 		Tuberia = null;
+        PosicionX = 0;
+        PosicionY = 0;
 		Rotacion = null;
 		ColorLiquido = null;
 		PorcentajeLleno = null;
@@ -39,17 +49,33 @@ public class Casilla
 		Tipo = tipo;
 		Estado = estado;
 		Tuberia = null;
+        PosicionX = 0;
+        PosicionY = 0;
 		Rotacion = null;
 		ColorLiquido = null;
 		PorcentajeLleno = null;
 	}
 
-    public Casilla(EnumCasillaTipo tipo, EnumCasillaEstado estado, int rotacion)
+    public Casilla(EnumCasillaTipo tipo, EnumCasillaEstado estado, int posicionX, int posicionY)
     {
         Tipo = tipo;
         Estado = estado;
-        Rotacion = rotacion;
         Tuberia = null;
+        PosicionX = posicionX;
+        PosicionY = posicionY;
+        Rotacion = null;
+        ColorLiquido = null;
+        PorcentajeLleno = null;
+    }
+
+    public Casilla(EnumCasillaTipo tipo, EnumCasillaEstado estado, int posicionX, int posicionY, int rotacion)
+    {
+        Tipo = tipo;
+        Estado = estado;
+        Tuberia = null;
+        PosicionX = posicionX;
+        PosicionY = posicionY;
+        Rotacion = rotacion;
         ColorLiquido = null;
         PorcentajeLleno = null;
     }
@@ -83,13 +109,36 @@ public class Casilla
         set { tuberia = value; }
     }
 
+    public int PosicionX
+    {
+        get { return posicionX; }
+        set { posicionX = value; }
+    }
+
+    public int PosicionY
+    {
+        get { return posicionY; }
+        set { posicionY = value; }
+    }
+
     /// <summary>
     /// Rotación [0, 90, 180, 270] - Aplica solamente a Tablero, nulo para el resto
     /// </summary>
     public int? Rotacion
     {
         get { return rotacion; }
-        set { rotacion = value >= 0 && value <= 270 ? value : 0; }
+        set {
+			bool assigned = false;
+
+			if (value >= 0 && value <= 270) {
+				rotacion = value;
+				assigned = true;
+			}
+
+			if (!assigned) {
+				rotacion = validRotations.ElementAt(UnityEngine.Random.Range(0, validRotations.Count()));
+			}
+		}
     }
 
     /// <summary>

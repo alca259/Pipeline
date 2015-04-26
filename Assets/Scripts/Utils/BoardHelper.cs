@@ -1,49 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Assets.Scripts.Utils
 {
     public static class BoardHelper
     {
-        public static Casilla Find(Casilla[][] matrix, Casilla objectToFind)
+        public static Casilla Find(IEnumerable<Casilla> matrix, Func<Casilla, bool> filter)
         {
-            int w = matrix.GetLength(0); // width
-            int h = matrix.GetLength(1); // height
-
-            for (int x = 0; x < w; ++x)
-            {
-                for (int y = 0; y < h; ++y)
-                {
-                    if (matrix[x][y].Equals(objectToFind))
-                    {
-                        return matrix[x][y];
-                    }
-                }
-            }
-
-            return null;
+            return matrix
+                .Where(w => w.Tipo != EnumCasillaTipo.Vacio)
+                .FirstOrDefault(filter);
         }
 
-        public static List<Casilla> GetPoints(Casilla[][] matrix)
+        public static List<Casilla> GetPoints(IEnumerable<Casilla> matrix)
         {
-            List<Casilla> result = new List<Casilla>();
-            Casilla objectToFind = new Casilla(EnumCasillaTipo.Punto);
-
-            int w = matrix.GetLength(0); // width
-            int h = matrix.GetLength(1); // height
-
-            for (int x = 0; x < w; ++x)
-            {
-                for (int y = 0; y < h; ++y)
-                {
-                    if (matrix[x][y].Equals(objectToFind))
-                    {
-                        result.Add(matrix[x][y]);
-                    }
-                }
-            }
-
-            return result;
+            return matrix.Where(casilla => casilla.Tipo == EnumCasillaTipo.Punto).ToList();
         }
     }
 }
