@@ -19,9 +19,14 @@ public class GameController : MonoBehaviour {
 	#endregion
 
     #region Private fields
+	private int maxColors = 8;
     private List<Casilla> casillas;
 	private List<Casilla> inputPoints = new List<Casilla>();
 	private List<Casilla> outputPoints = new List<Casilla>();
+	private Color[] colors = new Color[] {
+		Color.blue, Color.red, Color.yellow, Color.green,
+		Color.magenta, new Color(0.6F, 0.0F, 0.0F), Color.white, Color.black;
+	};
 	#endregion
 
 	#region Override Methods
@@ -29,11 +34,33 @@ public class GameController : MonoBehaviour {
 	/// Start this instance.
 	/// </summary>
 	private void Start() {
+		// Set current seed
 		Random.seed = gameSeed;
+
+		// Creating the positions for the grid
 		FillPoints();
-	    inputPoints.Add(GetRandomPoint(true));
-	    outputPoints.Add(GetRandomPoint(false));
-        DrawPoints();
+
+		// Validation
+		if (numberOfColors < 0) {
+			numberOfColors = 1;
+		} else if (numberOfColors >= maxColors) {
+			numberOfColors = maxColors;
+		}
+
+		// Calculate input/output and routes for each color
+		for(int colorIdx = 1; colorIdx <= numberOfColors; colorIdx++)
+		{
+	    	inputPoints.Add(GetRandomPoint(true));
+	    	outputPoints.Add(GetRandomPoint(false));
+
+			GenerateRoute(colorIdx);
+		}
+        //DrawPoints();
+		/*
+		// Draws a blue line from this transform to the target
+        Gizmos.color = Color.blue;
+        Gizmos.DrawLine (transform.position, target.position);
+		 */
 	}
 
 	/// <summary>
@@ -44,7 +71,8 @@ public class GameController : MonoBehaviour {
 	#endregion
 
 	#region Private Methods
-	private void FillPoints() {
+	private void FillPoints() 
+	{
 
         casillas = new List<Casilla>();
 
@@ -85,6 +113,7 @@ public class GameController : MonoBehaviour {
 		    {
 		        if (!inputPoints.Contains(testPoint))
 		        {
+					testPoint.Estado = EnumCasillaEstado.Entrada;
 		            break;
 		        }
 		    }
@@ -92,6 +121,7 @@ public class GameController : MonoBehaviour {
 		    {
                 if (!outputPoints.Contains(testPoint))
                 {
+					testPoint.Estado = EnumCasillaEstado.Salida;
                     break;
                 }
 		    }
@@ -100,18 +130,24 @@ public class GameController : MonoBehaviour {
 		return testPoint;
 	}
 
+	private void GenerateRoute(int colorIdx) {
+
+	}
+
 	private void DrawPoints() 
 	{
-		Vector2 boardSizes = boardObject.GetComponent<BoxCollider2D>().size;
-
-		float xBoard = boardSizes.x / 2;
-		float yBoard = boardSizes.y / 2;
-
+		// Tal vez deberiamos obtener el tamaño de la casilla en base al prefab, pero asi se calcula bien
 		float xCasilla = 1;
 		float yCasilla = 1;
 
-		float xBoardFix = 0.22f;
-		float yBoardFix = 0.22f;
+		// Calculamos el numero de posiciones posibles del tablero
+		float xBoard = gbsHorizontally * xCasilla;
+		float yBoard = gbsVertically * yCasilla;
+
+		// Calculamos el punto inferior izquierda del rectangulo (Ya que se pintan a partir del punto 0,0)
+		// Para calcularlo, obtenemos la distancia entre el medio y el lateral y la convertimos a negativo
+		float xBoardCornerLeftBottom = xBoard/2 * -1;
+		float yBoardCornerLeftBottom = yBoard/2 * -1;
 
 		for (int x = 0; x < gbsHorizontally; x++)
 		{
@@ -119,18 +155,19 @@ public class GameController : MonoBehaviour {
 			{
 				Casilla actual = BoardHelper.Find(casillas, f => f.PosicionX.Equals(x) && f.PosicionY.Equals(y));
 
-			    if (actual == null) continue;
-
+				if (actual == null) continue;
+				
 				if (actual.Tipo.Equals(EnumCasillaTipo.Tablero)) 
-                {
-					float x1 = 0.0f;
-					float y1 = 0.0f;
+				{
+					// Teniendo el punto inferior izquierda, obtenemos la distancia del cuadrado pequeño y vamos pintando segun la posicion
+					// Que como son tableros, la X y la Y empiezan con valor 1 y no 0
+					float x1 = xBoardCornerLeftBottom + xCasilla/2 + (xCasilla * actual.PosicionX);
+					float y1 = yBoardCornerLeftBottom + yCasilla/2 + (yCasilla * actual.PosicionY);
 
-					x1 = (xCasilla * actual.PosicionX) - xBoard + xCasilla - xBoardFix;
-					y1 = (yCasilla * actual.PosicionY) - yBoard + yCasilla - yBoardFix;
-
+					// Calculamos la rotacion en el eje Z
 					Quaternion rotation = Quaternion.Euler(0.0f, 0.0f, (float)actual.Rotacion);
 
+					// Instanciamos el objeto
 					Instantiate(this.pipeCurve, new Vector3(x1, y1, 0.0f), rotation);
 				}
 			}
