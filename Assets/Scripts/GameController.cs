@@ -23,9 +23,10 @@ public class GameController : MonoBehaviour {
     private List<Casilla> casillas;
 	private List<Casilla> inputPoints = new List<Casilla>();
 	private List<Casilla> outputPoints = new List<Casilla>();
-	private Color[] colors = new Color[] {
-		Color.blue, Color.red, Color.yellow, Color.green,
-		Color.magenta, new Color(0.6F, 0.0F, 0.0F), Color.white, Color.black;
+	private readonly Color[] colors =
+	{
+	    Color.blue, Color.red, Color.yellow, Color.green,
+	    Color.magenta, new Color(0.6F, 0.0F, 0.0F), Color.white, Color.black
 	};
 	#endregion
 
@@ -47,14 +48,17 @@ public class GameController : MonoBehaviour {
 			numberOfColors = maxColors;
 		}
 
-		// Calculate input/output and routes for each color
-		for(int colorIdx = 1; colorIdx <= numberOfColors; colorIdx++)
+		// Calculating input, output and route for each color
+		for(int colorIdx = 0; colorIdx < numberOfColors; colorIdx++)
 		{
-	    	inputPoints.Add(GetRandomPoint(true));
-	    	outputPoints.Add(GetRandomPoint(false));
-
-			GenerateRoute(colorIdx);
+            // Obtener punto de inicio para el color en curso
+	    	var inputPoint = GetRandomPoint(true);
+            // Obtener punto final para el color en curso
+	    	var outputPoint = GetRandomPoint(false);
+            // Obtenemos la ruta completa desde el punto de inicio hasta el final
+            List<Casilla> rutaColor = BoardHelper.GetRoute(colors[colorIdx], inputPoint, outputPoint, casillas, gbsHorizontally, gbsVertically);
 		}
+
         //DrawPoints();
 		/*
 		// Draws a blue line from this transform to the target
@@ -111,7 +115,7 @@ public class GameController : MonoBehaviour {
             testPoint = points.ElementAt(Random.Range(0, points.Count()));
 		    if (isInput)
 		    {
-		        if (!inputPoints.Contains(testPoint))
+				if (!inputPoints.Contains(testPoint) && !outputPoints.Contains(testPoint))
 		        {
 					testPoint.Estado = EnumCasillaEstado.Entrada;
 		            break;
@@ -119,7 +123,7 @@ public class GameController : MonoBehaviour {
 		    }
 		    else
 		    {
-                if (!outputPoints.Contains(testPoint))
+				if (!inputPoints.Contains(testPoint) && !outputPoints.Contains(testPoint))
                 {
 					testPoint.Estado = EnumCasillaEstado.Salida;
                     break;
@@ -128,10 +132,6 @@ public class GameController : MonoBehaviour {
 		}
 
 		return testPoint;
-	}
-
-	private void GenerateRoute(int colorIdx) {
-
 	}
 
 	private void DrawPoints() 

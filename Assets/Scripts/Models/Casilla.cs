@@ -15,8 +15,9 @@ public class Casilla
     private int? rotacion;
     private Color? colorLiquido;
     private float? porcentajeLleno;
+    private int? orden;
 
-	private List<int> validRotations = new List<int> {0, 90, 180, 270};
+	private readonly List<int> validRotations = new List<int> {0, 90, 180, 270};
     #endregion
 
     #region Public constructors
@@ -42,6 +43,7 @@ public class Casilla
 		Rotacion = null;
 		ColorLiquido = null;
 		PorcentajeLleno = null;
+	    Orden = null;
 	}
 
 	public Casilla(EnumCasillaTipo tipo, EnumCasillaEstado estado)
@@ -54,6 +56,7 @@ public class Casilla
 		Rotacion = null;
 		ColorLiquido = null;
 		PorcentajeLleno = null;
+        Orden = null;
 	}
 
     public Casilla(EnumCasillaTipo tipo, EnumCasillaEstado estado, int posicionX, int posicionY)
@@ -66,6 +69,7 @@ public class Casilla
         Rotacion = null;
         ColorLiquido = null;
         PorcentajeLleno = null;
+        Orden = null;
     }
 
     public Casilla(EnumCasillaTipo tipo, EnumCasillaEstado estado, int posicionX, int posicionY, int rotacion)
@@ -78,6 +82,7 @@ public class Casilla
         Rotacion = rotacion;
         ColorLiquido = null;
         PorcentajeLleno = null;
+        Orden = null;
     }
     #endregion
 
@@ -158,5 +163,12 @@ public class Casilla
         get { return porcentajeLleno; }
         set { porcentajeLleno = value; }
     }
+
+    public int? Orden
+    {
+        get { return orden; }
+        set { orden = value ?? 0; }
+    }
+
     #endregion
 }
